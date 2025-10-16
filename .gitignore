@@ -1,0 +1,53 @@
+# ROS2 workspace ignores
+build/
+install/
+log/
+*.pyc
+__pycache__/
+*.swp
+*.swo
+*.db
+*.sqlite
+*.log
+
+# colcon / ament / catkin build directories
+**/build/
+**/install/
+**/log/
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+.env
+venv/
+.envrc
+
+# temporary and backup files
+*~
+*.bak
+*.orig
+
+# compiled object files
+*.o
+*.so
+*.a
+*.dll
+
+# rosbag and large data (optionally track via LFS instead)
+*.bag
+*.bag.active
+
+# mesh and binary asset patterns - consider using Git LFS for these
+*.stl
+*.dae
+*.obj
+*.ply
+*.pcd
+

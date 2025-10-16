@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="mobile_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:include filename="common_properties.urdf.xacro"/>
+    <xacro:include filename="mobile_base_1.urdf.xacro" />
+    <xacro:include filename="mobile_base_1_gazebo.urdf.xacro" />
+    <xacro:include filename="camera.urdf.xacro" />
+    <xacro:include filename="depth_camera.urdf.xacro" />
+    <xacro:include filename="imu.urdf.xacro" />
+    <xacro:include filename="lidar.urdf.xacro" />
+</robot>

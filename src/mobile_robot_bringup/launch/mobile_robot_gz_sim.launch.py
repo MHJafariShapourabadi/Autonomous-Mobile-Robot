@@ -1,0 +1,113 @@
+from launch import LaunchDescription
+from launch_ros.actions import Node
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.actions import DeclareLaunchArgument, TimerAction, SetEnvironmentVariable
+from launch.substitutions import LaunchConfiguration
+from launch.substitutions import Command
+from launch.substitutions import PathJoinSubstitution
+from launch_ros.substitutions import FindPackageShare
+from ament_index_python.packages import get_package_share_directory
+import os
+
+
+def generate_launch_description():
+
+    urdf_path = DeclareLaunchArgument(
+        name="urdf_path",
+        default_value=PathJoinSubstitution([FindPackageShare("mobile_robot_description"), "urdf/mobile_robot.urdf.xacro"])
+    )
+
+    world_path = DeclareLaunchArgument(
+        name="world_path",
+        default_value=PathJoinSubstitution([FindPackageShare("mobile_robot_description"), "worlds/Depot/model.sdf -r"])
+    )
+
+    rviz_config_path = DeclareLaunchArgument(
+        name="rviz_config_path",
+        default_value=PathJoinSubstitution([FindPackageShare("mobile_robot_description"), "rviz/default_config.rviz"])
+    )
+
+    bridge_config_path = DeclareLaunchArgument(
+        name="bridge_config_path",
+        default_value=PathJoinSubstitution([FindPackageShare("mobile_robot_bringup"), "config/gz_bridge.yaml"])
+    )
+
+    robot_state_publisher = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        parameters=[{
+            "robot_description": Command(["xacro ", LaunchConfiguration("urdf_path")])
+        }]
+    )
+
+    gz_sim = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(PathJoinSubstitution([FindPackageShare("ros_gz_sim"), "launch/gz_sim.launch.py"])),
+        launch_arguments=[("gz_args", LaunchConfiguration("world_path"))]
+    )
+
+    spawn_robot = Node(
+        package="ros_gz_sim",
+        executable="create",
+        arguments=["-topic", "robot_description"]
+    )
+
+    ros_gz_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        parameters=[{
+            "config_file": LaunchConfiguration("bridge_config_path")
+        }]
+    )
+
+    lidar_frame_id_converter = Node(
+        package="mobile_robot_bringup",
+        executable="pointcloud_frame_id_converter",
+        name="pointcloud_frame_id_converter_lidar",
+        parameters=[{
+            "frame_id": "lidar_link",
+            "subscription_topic": "/lidar/pointcloud/points",
+            "publisher_topic": "/lidar/pointcloud/points/corrected",
+        }]
+    )
+
+    depth_camera_frame_id_converter = Node(
+        package="mobile_robot_bringup",
+        executable="pointcloud_frame_id_converter",
+        name="pointcloud_frame_id_converter_depth_camera",
+        parameters=[{
+            "frame_id": "depth_camera_link",
+            "subscription_topic": "/depth_camera/points",
+            "publisher_topic": "/depth_camera/points/corrected",
+        }]
+    )
+
+    rviz = Node(
+        executable="rviz2",
+        package="rviz2",
+        output="screen",
+        arguments=[
+            "-d", LaunchConfiguration("rviz_config_path"),
+        ]
+    )
+
+    start_rviz = TimerAction(
+        period=20.0, # wait 20 seconds
+        actions=[
+            rviz,
+        ]
+    )
+
+    return LaunchDescription([
+        urdf_path,
+        world_path,
+        rviz_config_path,
+        bridge_config_path,
+        robot_state_publisher,
+        gz_sim,
+        spawn_robot,
+        ros_gz_bridge,
+        lidar_frame_id_converter,
+        depth_camera_frame_id_converter,
+        start_rviz
+    ])
