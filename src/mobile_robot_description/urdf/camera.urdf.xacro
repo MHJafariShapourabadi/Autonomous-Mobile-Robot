@@ -16,7 +16,7 @@
             <geometry>
                 <box size="${camera_length} ${camera_width} ${camera_height}" />
             </geometry>
-            <material name="gray" />
+            <material name="dark_gray" />
             <origin xyz="0 0 0" rpy="0 0 0" />
         </visual>
         <collision>

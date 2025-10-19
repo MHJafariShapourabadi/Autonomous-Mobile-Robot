@@ -10,7 +10,7 @@
     <let name="world_path" value="$(find-pkg-share mobile_robot_description)/worlds/Depot/model.sdf" />
 
     <node pkg="robot_state_publisher" exec="robot_state_publisher" >
-        <param name="robot_description" value="$(command 'xacro $(var urdf_path)')"/>
+        <param name="robot_description" value="$(command 'xacro $(var urdf_path) iz_gz:='true'')"/>
     </node>
 
     <include file="$(find-pkg-share ros_gz_sim)/launch/gz_sim.launch.py" >

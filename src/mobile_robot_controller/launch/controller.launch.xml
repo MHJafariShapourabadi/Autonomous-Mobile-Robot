@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster --controller-manager /controller_manager --switch-timeout 30.0" />
+    <node pkg="controller_manager" exec="spawner" args="simple_velocity_controller --controller-manager /controller_manager --switch-timeout 30.0" />
+    <!-- <node pkg="controller_manager" exec="spawner" args="diff_drive_base_controller --controller-manager /controller_manager --switch-timeout 30.0" /> -->
+</launch>

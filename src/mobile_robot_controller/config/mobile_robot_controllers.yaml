@@ -1,0 +1,72 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100
+    use_sim_time: true
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    simple_velocity_controller:
+      type: velocity_controllers/JointGroupVelocityController
+
+    # diff_drive_base_controller:
+    #   type: diff_drive_controller/DiffDriveController
+
+joint_state_broadcaster:
+  ros__parameters:
+    use_sim_time: true
+    joints:
+      - base_left_wheel_joint
+      - base_right_wheel_joint
+
+simple_velocity_controller:
+  ros__parameters:
+    use_sim_time: true
+    joints:
+      - base_left_wheel_joint
+      - base_right_wheel_joint
+
+# diff_drive_base_controller:
+#   ros__parameters:
+#     use_sim_time: true
+
+#     # List of joints used by the diff drive
+#     left_wheel_names: ["base_left_wheel_joint"]
+#     right_wheel_names: ["base_right_wheel_joint"]
+
+#     # Geometry
+#     wheel_separation: 0.348         # distance between left and right wheels [m]
+#     wheel_radius: 0.1             # radius of each wheel [m]
+
+#     # Kinematics parameters
+#     wheel_separation_multiplier: 1.0
+#     wheel_radius_multiplier: 1.0
+
+#     tf_frame_prefix_enable: false
+#     tf_frame_prefix: ""
+
+#     # Command interface
+#     cmd_vel_timeout: 0.5
+#     publish_rate: 100.0
+#     velocity_rolling_window_size: 10
+
+#     # Topics
+#     odom_frame_id: "odom"
+#     base_frame_id: "base_footprint"
+#     enable_odom_tf: true
+#     pose_covariance_diagonal: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+#     twist_covariance_diagonal: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+#     # Odometry and twist limits
+#     linear:
+#       x:
+#         has_velocity_limits: true
+#         max_velocity: 2.0
+#         has_acceleration_limits: true
+#         max_acceleration: 4.0
+#     angular:
+#       z:
+#         has_velocity_limits: true
+#         max_velocity: 2.0
+#         has_acceleration_limits: true
+#         max_acceleration: 4.0

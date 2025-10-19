@@ -13,6 +13,9 @@ import os
 
 def generate_launch_description():
 
+    ros_distro = os.environ["ROS_DISTRO"]
+    is_gz = "true" if ros_distro == "jazzy" else "false"
+
     urdf_path = DeclareLaunchArgument(
         name="urdf_path",
         default_value=PathJoinSubstitution([FindPackageShare("mobile_robot_description"), "urdf/mobile_robot.urdf.xacro"])
@@ -28,21 +31,55 @@ def generate_launch_description():
         default_value=PathJoinSubstitution([FindPackageShare("mobile_robot_description"), "rviz/default_config.rviz"])
     )
 
-    bridge_config_path = DeclareLaunchArgument(
-        name="bridge_config_path",
-        default_value=PathJoinSubstitution([FindPackageShare("mobile_robot_bringup"), "config/gz_bridge.yaml"])
-    )
+    if ros_distro == "jazzy":
+        bridge_config_path = DeclareLaunchArgument(
+            name="bridge_config_path",
+            default_value=PathJoinSubstitution([FindPackageShare("mobile_robot_bringup"), "config/gz_bridge.yaml"])
+        )
+    else:
+        bridge_config_path = DeclareLaunchArgument(
+            name="bridge_config_path",
+            default_value=PathJoinSubstitution([FindPackageShare("mobile_robot_bringup"), "config/ign_bridge.yaml"])
+        )
+    
+    robot_description = Command([
+        "xacro ",
+        LaunchConfiguration("urdf_path"),
+        " is_gz:=",
+        is_gz,
+    ])
 
     robot_state_publisher = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         parameters=[{
-            "robot_description": Command(["xacro ", LaunchConfiguration("urdf_path")])
+            "robot_description": robot_description
         }]
     )
 
+    # Launch the controller manager node with the robot description for real harware control (not simulation)
+    # controller_manager = Node(
+    #     package='controller_manager',
+    #     executable='ros2_control_node',
+    #     name='controller_manager',
+    #     parameters=[
+    #         {'robot_description': robot_description},  # This is the key line!
+    #         {'use_sim_time': False},  # Note: False for real hardware
+    #         PathJoinSubstitution([
+    #             FindPackageShare("mobile_robot_controller"),
+    #             "config/mobile_robot_controllers.yaml"
+    #         ]),
+    #     ],
+    #     output='screen',
+    # )
+
     gz_sim = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(PathJoinSubstitution([FindPackageShare("ros_gz_sim"), "launch/gz_sim.launch.py"])),
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([
+                FindPackageShare("ros_gz_sim"),
+                "launch/gz_sim.launch.py"
+            ])
+        ),
         launch_arguments=[("gz_args", LaunchConfiguration("world_path"))]
     )
 
@@ -82,6 +119,20 @@ def generate_launch_description():
         }]
     )
 
+    mobile_robot_controller = TimerAction(
+    period=20.0,  # Wait 15 seconds for Gazebo + robot to initialize
+    actions=[
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                PathJoinSubstitution([
+                    FindPackageShare("mobile_robot_controller"),
+                    "launch/controller.launch.py"
+                ])
+            )
+        )
+    ]
+)
+
     rviz = Node(
         executable="rviz2",
         package="rviz2",
@@ -92,7 +143,7 @@ def generate_launch_description():
     )
 
     start_rviz = TimerAction(
-        period=20.0, # wait 20 seconds
+        period=25.0, # wait 20 seconds
         actions=[
             rviz,
         ]
@@ -109,5 +160,6 @@ def generate_launch_description():
         ros_gz_bridge,
         lidar_frame_id_converter,
         depth_camera_frame_id_converter,
+        mobile_robot_controller,
         start_rviz
     ])

@@ -17,6 +17,10 @@
         <color rgba="0.8 0.8 0.8 1" />
     </material>
 
+    <material name="dark_gray">
+        <color rgba="0.3 0.3 0.3 1" />
+    </material>
+
     <xacro:macro name="box_inertial" params="mass size origin_xyz origin_rpy" >
         <xacro:property name="m" value="${mass}" />
         <xacro:property name="x" value="${float(size.split()[0])}" />
