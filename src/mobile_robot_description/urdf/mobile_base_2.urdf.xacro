@@ -20,10 +20,12 @@
                     <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
                 </geometry>
                 <origin xyz="0 0 0" rpy="${pi / 2.0} 0 0" />
+                <material name="red" />
             </visual>
             <collision>
                 <geometry>
-                    <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+                    <!-- <cylinder radius="${wheel_radius}" length="${wheel_length}"/> -->
+                    <sphere radius="${wheel_radius}" />
                 </geometry>
                 <origin xyz="0 0 0" rpy="${pi / 2.0} 0 0" />
             </collision>
@@ -58,87 +60,123 @@
         <origin xyz="0 0 ${base_height / 2.0 + wheel_radius}" rpy="0 0 0"/>
     </joint>
 
-    <link name="base_link">
-        <!-- <visual>
+    <link name="base_link" >
+        <xacro:box_inertial mass="1.0" size="${base_length} ${base_width} ${base_height}" origin_xyz="0 0 0" origin_rpy="0 0 0"/>
+    </link>
+
+    <joint name="base_left_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="base_left_link"/>
+        <origin xyz="0 ${+ (base_width + boundary_thickness) / 2.0} 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="base_left_link">
+        <visual>
             <geometry>
-                <box size="${base_length} ${base_width} ${base_height}"/>
+                <box size="${base_length + 2.0 * boundary_thickness} ${boundary_thickness} ${base_height + 2.0 * boundary_thickness}"/>
             </geometry>
             <material name="green"/>
             <origin xyz="0 0 0" rpy="0 0 0"/>
-        </visual> -->
-
-        <visual>
-            <geometry>
-                <box size="${base_length + 2.0 * boundary_thickness} ${boundary_thickness} ${base_height + 2.0 * boundary_thickness}"/>
-            </geometry>
-            <material name="green"/>
-            <origin xyz="0 ${+ (base_width + boundary_thickness) / 2.0} 0" rpy="0 0 0"/>
         </visual>
         <collision>
             <geometry>
                 <box size="${base_length + 2.0 * boundary_thickness} ${boundary_thickness} ${base_height + 2.0 * boundary_thickness}"/>
             </geometry>
-            <origin xyz="0 ${+ (base_width + boundary_thickness) / 2.0} 0" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
         </collision>
+        <xacro:box_inertial mass="1.0" size="${base_length + 2.0 * boundary_thickness} ${boundary_thickness} ${base_height + 2.0 * boundary_thickness}" origin_xyz="0 0 0" origin_rpy="0 0 0"/>
+    </link>
 
+    <joint name="base_right_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="base_right_link"/>
+        <origin xyz="0 ${- (base_width + boundary_thickness) / 2.0} 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="base_right_link">
         <visual>
             <geometry>
                 <box size="${base_length + 2.0 * boundary_thickness} ${boundary_thickness} ${base_height + 2.0 * boundary_thickness}"/>
             </geometry>
             <material name="green"/>
-            <origin xyz="0 ${- (base_width + boundary_thickness) / 2.0} 0" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
         </visual>
         <collision>
             <geometry>
                 <box size="${base_length + 2.0 * boundary_thickness} ${boundary_thickness} ${base_height + 2.0 * boundary_thickness}"/>
             </geometry>
-            <origin xyz="0 ${- (base_width + boundary_thickness) / 2.0} 0" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
         </collision>
+        <xacro:box_inertial mass="1.0" size="${base_length + 2.0 * boundary_thickness} ${boundary_thickness} ${base_height + 2.0 * boundary_thickness}" origin_xyz="0 0 0" origin_rpy="0 0 0"/>
+    </link>
 
+    <joint name="base_front_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="base_front_link"/>
+        <origin xyz="${+ (base_length + boundary_thickness) / 2.0} 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="base_front_link">
         <visual>
             <geometry>
                 <box size="${boundary_thickness} ${base_width + 2.0 * boundary_thickness} ${base_height + 2.0 * boundary_thickness}"/>
             </geometry>
             <material name="green"/>
-            <origin xyz="${+ (base_length + boundary_thickness) / 2.0} 0 0" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
         </visual>
         <collision>
             <geometry>
                 <box size="${boundary_thickness} ${base_width + 2.0 * boundary_thickness} ${base_height + 2.0 * boundary_thickness}"/>
             </geometry>
-            <origin xyz="${+ (base_length + boundary_thickness) / 2.0} 0 0" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
         </collision>
+        <xacro:box_inertial mass="1.0" size="${boundary_thickness} ${base_width + 2.0 * boundary_thickness} ${base_height + 2.0 * boundary_thickness}" origin_xyz="0 0 0" origin_rpy="0 0 0"/>
+    </link>
 
+    <joint name="base_rear_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="base_rear_link"/>
+        <origin xyz="${- (base_length + boundary_thickness) / 2.0} 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="base_rear_link">
         <visual>
             <geometry>
                 <box size="${boundary_thickness} ${base_width + 2.0 * boundary_thickness} ${base_height + 2.0 * boundary_thickness}"/>
             </geometry>
             <material name="green"/>
-            <origin xyz="${- (base_length + boundary_thickness) / 2.0} 0 0" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
         </visual>
         <collision>
             <geometry>
                 <box size="${boundary_thickness} ${base_width + 2.0 * boundary_thickness} ${base_height + 2.0 * boundary_thickness}"/>
             </geometry>
-            <origin xyz="${- (base_length + boundary_thickness) / 2.0} 0 0" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
         </collision>
+        <xacro:box_inertial mass="1.0" size="${boundary_thickness} ${base_width + 2.0 * boundary_thickness} ${base_height + 2.0 * boundary_thickness}" origin_xyz="0 0 0" origin_rpy="0 0 0"/>
+    </link>
 
+    <joint name="base_top_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="base_top_link"/>
+        <origin xyz="0 0 ${+ (base_height + boundary_thickness) / 2.0}" rpy="0 0 0"/>
+    </joint>
+
+    <link name="base_top_link">
         <visual>
             <geometry>
                 <box size="${base_length + 2.0 * boundary_thickness} ${base_width + 2.0 * boundary_thickness} ${boundary_thickness}"/>
             </geometry>
             <material name="green"/>
-            <origin xyz="0 0 ${+ (base_height + boundary_thickness) / 2.0}" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
         </visual>
         <collision>
             <geometry>
                 <box size="${base_length + 2.0 * boundary_thickness} ${base_width + 2.0 * boundary_thickness} ${boundary_thickness}"/>
             </geometry>
-            <origin xyz="0 0 ${+ (base_height + boundary_thickness) / 2.0}" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
         </collision>
-
-        <xacro:box_inertial mass="5.0" size="${base_length + 2.0 * boundary_thickness} ${base_width + 2.0 * boundary_thickness} ${base_height + 2.0 * boundary_thickness}" origin_xyz="0 0 ${boundary_thickness}" origin_rpy="0 0 0"/>
-
+        <xacro:box_inertial mass="1.0" size="${base_length + 2.0 * boundary_thickness} ${base_width + 2.0 * boundary_thickness} ${boundary_thickness}" origin_xyz="0 0 0" origin_rpy="0 0 0"/>
     </link>
 
     <joint name="base_left_wheel_joint" type="continuous">

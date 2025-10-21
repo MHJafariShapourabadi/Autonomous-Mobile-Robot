@@ -21,6 +21,14 @@
         <color rgba="0.3 0.3 0.3 1" />
     </material>
 
+    <material name="chassis_grey">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+    </material>
+
+    <material name="wheel_grey">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+    </material>
+
     <xacro:macro name="box_inertial" params="mass size origin_xyz origin_rpy" >
         <xacro:property name="m" value="${mass}" />
         <xacro:property name="x" value="${float(size.split()[0])}" />

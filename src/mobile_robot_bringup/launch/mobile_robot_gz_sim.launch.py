@@ -53,6 +53,7 @@ def generate_launch_description():
         package="robot_state_publisher",
         executable="robot_state_publisher",
         parameters=[{
+            "use_sim_time": True,
             "robot_description": robot_description
         }]
     )
@@ -102,6 +103,7 @@ def generate_launch_description():
         executable="pointcloud_frame_id_converter",
         name="pointcloud_frame_id_converter_lidar",
         parameters=[{
+            "use_sim_time": True,
             "frame_id": "lidar_link",
             "subscription_topic": "/lidar/pointcloud/points",
             "publisher_topic": "/lidar/pointcloud/points/corrected",
@@ -113,14 +115,15 @@ def generate_launch_description():
         executable="pointcloud_frame_id_converter",
         name="pointcloud_frame_id_converter_depth_camera",
         parameters=[{
-            "frame_id": "depth_camera_link",
+            "use_sim_time": True,
+            "frame_id": "zed_camera_link",
             "subscription_topic": "/depth_camera/points",
             "publisher_topic": "/depth_camera/points/corrected",
         }]
     )
 
     mobile_robot_controller = TimerAction(
-    period=20.0,  # Wait 15 seconds for Gazebo + robot to initialize
+    period=5.0,  # Wait 15 seconds for Gazebo + robot to initialize
     actions=[
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
@@ -143,7 +146,7 @@ def generate_launch_description():
     )
 
     start_rviz = TimerAction(
-        period=25.0, # wait 20 seconds
+        period=5.0, # wait 20 seconds
         actions=[
             rviz,
         ]
