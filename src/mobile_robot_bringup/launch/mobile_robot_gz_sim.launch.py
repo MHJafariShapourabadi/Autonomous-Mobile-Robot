@@ -2,7 +2,7 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.actions import DeclareLaunchArgument, TimerAction, SetEnvironmentVariable
+from launch.actions import DeclareLaunchArgument, TimerAction, SetEnvironmentVariable, ExecuteProcess
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import Command
 from launch.substitutions import PathJoinSubstitution
@@ -123,18 +123,18 @@ def generate_launch_description():
     )
 
     mobile_robot_controller = TimerAction(
-    period=5.0,  # Wait 15 seconds for Gazebo + robot to initialize
-    actions=[
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                PathJoinSubstitution([
-                    FindPackageShare("mobile_robot_controller"),
-                    "launch/controller.launch.py"
-                ])
+        period=5.0,  # Wait 15 seconds for Gazebo + robot to initialize
+        actions=[
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(
+                    PathJoinSubstitution([
+                        FindPackageShare("mobile_robot_controller"),
+                        "launch/controller.launch.py"
+                    ])
+                )
             )
-        )
-    ]
-)
+        ]
+    )
 
     rviz = Node(
         executable="rviz2",
@@ -152,6 +152,21 @@ def generate_launch_description():
         ]
     )
 
+    # Absolute path to your venv python
+    venv_python = "/home/fasta/PythonVEnvs/rosailab/bin/python"
+
+    # Start your object detector via `python -m ...`
+    object_detector = ExecuteProcess(
+        cmd=[venv_python, "-u", "-m", "mobile_robot_object_detector.object_detector", "--ros-args"],
+        name="object_detector",
+        output="screen"
+        # (inherits the environment from the launch process so your sourced workspace
+        #  PYTHONPATH/AMENT_PREFIX_PATH are kept)
+    )
+
+    # Optional: wait a few seconds so the bridge/camera topic is alive first
+    start_object_detector = TimerAction(period=3.0, actions=[object_detector])
+
     return LaunchDescription([
         urdf_path,
         world_path,
@@ -164,5 +179,6 @@ def generate_launch_description():
         lidar_frame_id_converter,
         depth_camera_frame_id_converter,
         mobile_robot_controller,
+        start_object_detector,
         start_rviz
     ])
