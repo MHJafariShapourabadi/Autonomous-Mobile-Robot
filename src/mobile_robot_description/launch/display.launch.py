@@ -18,7 +18,6 @@ def generate_launch_description():
         package="robot_state_publisher",
         parameters=[
             {
-                # 'robot_description': Command(f"xacro {urdf_path}")
                 'robot_description': Command(["xacro ", urdf_path])
             }
         ]
