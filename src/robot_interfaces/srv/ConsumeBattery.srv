@@ -1,0 +1,7 @@
+# ConsumeBattery.srv
+
+# Request
+float32 consume
+---
+# Response
+bool success

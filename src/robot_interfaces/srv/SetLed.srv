@@ -1,0 +1,7 @@
+# SetLed.srv
+
+# Request
+LedState led_state
+---
+# Response
+bool success

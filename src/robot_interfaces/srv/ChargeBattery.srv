@@ -1,0 +1,7 @@
+# ChargeBattery.srv
+
+# Request
+bool charge
+---
+# Response
+bool success

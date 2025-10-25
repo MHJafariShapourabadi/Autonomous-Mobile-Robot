@@ -1,0 +1,10 @@
+# GoToPose.action
+
+# Goal
+geometry_msgs/Pose goal_pose
+---
+# Result
+geometry_msgs/Pose final_pose
+---
+# Feedback
+geometry_msgs/Pose current_pose
