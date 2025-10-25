@@ -55,6 +55,26 @@
                 </ros>
             </plugin>
         </gazebo>
+        
+        <gazebo>
+            <plugin filename="gz-sim-linearbatteryplugin-system" name="gz::sim::systems::LinearBatteryPlugin" >
+                <battery_name>linear_battery</battery_name>
+                <voltage>14.4</voltage>
+                <open_circuit_voltage_constant_coef>14.4</open_circuit_voltage_constant_coef>
+                <fix_issue_225>true</fix_issue_225>
+                <initial_charge>400</initial_charge>
+                <capacity>400</capacity>
+                <resistance>0.003064</resistance>
+                <power_load>2880</power_load>
+                <start_drainign>false</start_drainign>
+                <power_draining_topic>/battery/discharge/start</power_draining_topic>
+                <stop_power_draining_topic>/battery/discharge/stop</stop_power_draining_topic>
+                <enable_recharge>true</enable_recharge>
+                <recharge_by_topic>true</recharge_by_topic>
+                <charging_time>42.1</charging_time>
+            </plugin>
+        </gazebo>
+        
     </xacro:if>
 
     <xacro:unless value="$(arg is_gz)">
