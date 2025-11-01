@@ -2,7 +2,8 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.actions import TimerAction, DeclareLaunchArgument
 from launch_ros.substitutions import FindPackageShare
-from launch.substitutions import PathJoinSubstitution
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
+from launch.conditions import IfCondition, UnlessCondition
 
 def generate_launch_description():
 
@@ -39,35 +40,78 @@ def generate_launch_description():
         ]
     )
 
-    # simple_velocity_controller_spawner = Node(
-    #     package="controller_manager",
-    #     executable="spawner",
-    #     arguments=[
-    #         "simple_velocity_controller",
-    #         "--controller-manager", "/controller_manager",
-    #         "--switch-timeout", "20.0",
-    #     ]
-    # )
-
-    diff_drive_base_controller_spawner = Node(
+    simple_velocity_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "diff_drive_base_controller",
+            "simple_velocity_controller",
             "--controller-manager", "/controller_manager",
-            "--switch-timeout", "30.0",
+            "--switch-timeout", "20.0",
         ]
     )
+
+    # diff_drive_base_controller_spawner = Node(
+    #     package="controller_manager",
+    #     executable="spawner",
+    #     arguments=[
+    #         "diff_drive_base_controller",
+    #         "--controller-manager", "/controller_manager",
+    #         "--switch-timeout", "30.0",
+    #     ]
+    # )
 
     controller_spawning = TimerAction(
     period=10.0,
     actions=[
         joint_state_broadcaster_spawner,
-        # simple_velocity_controller_spawner,
-        diff_drive_base_controller_spawner,
-    ]
-)
+        simple_velocity_controller_spawner,
+        # diff_drive_base_controller_spawner,
+    ])
+
+    use_python_arg = DeclareLaunchArgument(
+        name="use_python",
+        default_value="False",
+    )
+
+    wheel_radius_arg = DeclareLaunchArgument(
+        name="wheel_radius",
+        default_value="0.1",
+    )
+
+    wheel_separation_arg = DeclareLaunchArgument(
+        name="wheel_separation",
+        default_value="0.45",
+    )
+
+    use_python = LaunchConfiguration("use_python")
+    wheel_radius = LaunchConfiguration("wheel_radius")
+    wheel_separation = LaunchConfiguration("wheel_separation")
+
+    cmd_vel_to_wheel_vel_py = Node(
+        package="mobile_robot_controller",
+        executable="simple_controller.py",
+        parameters=[{
+            "wheel_radius": wheel_radius,
+            "wheel_separation": wheel_separation,
+        }],
+        condition=IfCondition(use_python),
+    )
+
+    cmd_vel_to_wheel_vel_cpp = Node(
+        package="mobile_robot_controller",
+        executable="simple_controller",
+        parameters=[{
+            "wheel_radius": wheel_radius,
+            "wheel_separation": wheel_separation,
+        }],
+        condition=UnlessCondition(use_python),
+    )
 
     return LaunchDescription([
         controller_spawning,
+        use_python_arg,
+        wheel_radius_arg,
+        wheel_separation_arg,
+        cmd_vel_to_wheel_vel_py,
+        cmd_vel_to_wheel_vel_cpp
     ])
