@@ -39,7 +39,7 @@ class SimpleController(Node):
         self.cmd_vel_sub = self.create_subscription(
             msg_type=TwistStamped,
             topic="cmd_vel",
-            callback=None,
+            callback=self.cmd_vel_callback,
             qos_profile=10
         )
 
@@ -55,7 +55,7 @@ class SimpleController(Node):
         wheel_speed = np.matmul(self._cmd_vel_to_wheel_vel_matrix, robot_speed)
 
         wheel_speed_msg = Float64MultiArray()
-        wheel_speed_msg.data = [wheel_speed[1, 0], wheel_speed[0, 0]]
+        wheel_speed_msg.data = [wheel_speed[1, 0], wheel_speed[0, 0]] # [left_wheel_speed, right_wheel_speed]
 
         self.wheel_vel_pub.publish(wheel_speed_msg)
 

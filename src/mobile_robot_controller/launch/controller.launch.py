@@ -1,6 +1,6 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import TimerAction, DeclareLaunchArgument
+from launch.actions import TimerAction, DeclareLaunchArgument, GroupAction
 from launch_ros.substitutions import FindPackageShare
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 from launch.conditions import IfCondition, UnlessCondition
@@ -30,6 +30,14 @@ def generate_launch_description():
     #     output='screen',
     # )
 
+    use_simple_controller_arg = DeclareLaunchArgument(
+        name="use_simple_controller",
+        default_value="True"
+    )
+
+    use_simple_controller = LaunchConfiguration("use_simple_controller")
+
+
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -40,33 +48,16 @@ def generate_launch_description():
         ]
     )
 
-    simple_velocity_controller_spawner = Node(
+    diff_drive_base_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "simple_velocity_controller",
+            "diff_drive_base_controller",
             "--controller-manager", "/controller_manager",
-            "--switch-timeout", "20.0",
-        ]
+            "--switch-timeout", "30.0",
+        ],
+        condition=UnlessCondition(use_simple_controller),
     )
-
-    # diff_drive_base_controller_spawner = Node(
-    #     package="controller_manager",
-    #     executable="spawner",
-    #     arguments=[
-    #         "diff_drive_base_controller",
-    #         "--controller-manager", "/controller_manager",
-    #         "--switch-timeout", "30.0",
-    #     ]
-    # )
-
-    controller_spawning = TimerAction(
-    period=10.0,
-    actions=[
-        joint_state_broadcaster_spawner,
-        simple_velocity_controller_spawner,
-        # diff_drive_base_controller_spawner,
-    ])
 
     use_python_arg = DeclareLaunchArgument(
         name="use_python",
@@ -86,6 +77,16 @@ def generate_launch_description():
     use_python = LaunchConfiguration("use_python")
     wheel_radius = LaunchConfiguration("wheel_radius")
     wheel_separation = LaunchConfiguration("wheel_separation")
+
+    simple_velocity_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "simple_velocity_controller",
+            "--controller-manager", "/controller_manager",
+            "--switch-timeout", "30.0",
+        ]
+    )
 
     cmd_vel_to_wheel_vel_py = Node(
         package="mobile_robot_controller",
@@ -107,11 +108,27 @@ def generate_launch_description():
         condition=UnlessCondition(use_python),
     )
 
+    simple_velocity_controller = GroupAction(
+        actions=[
+            simple_velocity_controller_spawner,
+            cmd_vel_to_wheel_vel_py,
+            cmd_vel_to_wheel_vel_cpp
+        ],
+        condition=IfCondition(use_simple_controller)
+    )
+
+    controller_spawning = TimerAction(
+    period=10.0,
+    actions=[
+        joint_state_broadcaster_spawner,
+        simple_velocity_controller,
+        diff_drive_base_controller_spawner,
+    ])
+
     return LaunchDescription([
-        controller_spawning,
+        use_simple_controller_arg,
         use_python_arg,
         wheel_radius_arg,
         wheel_separation_arg,
-        cmd_vel_to_wheel_vel_py,
-        cmd_vel_to_wheel_vel_cpp
+        controller_spawning,
     ])
