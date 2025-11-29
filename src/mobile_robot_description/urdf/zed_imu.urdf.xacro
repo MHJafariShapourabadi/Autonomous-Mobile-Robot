@@ -31,15 +31,65 @@
     </joint>
 
 
-    <gazebo>
-        <plugin name="gz::sim::systems::Imu" filename="gz-sim-imu-system" />
-    </gazebo>
+    <xacro:if value="$(arg is_gz)">
+        <gazebo>
+            <plugin name="gz::sim::systems::Imu" filename="gz-sim-imu-system" />
+        </gazebo>
+    </xacro:if>
+
+    <xacro:unless value="$(arg is_gz)">
+        <gazebo>
+            <plugin name="ignition::gazebo::systems::Imu" filename="ignition-gazebo-imu-system" />
+        </gazebo>
+    </xacro:unless>
 
     <gazebo reference="zed_imu_link">
         <sensor name="imu" type="imu">
-            <imu></imu>
+            <imu>
+                <angular_velocity>
+                    <x>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>2e-4</stddev>
+                        </noise>
+                    </x>
+                    <y>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>2e-4</stddev>
+                        </noise>
+                    </y>
+                    <z>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>2e-4</stddev>
+                        </noise>
+                    </z>
+                </angular_velocity>
+                <linear_acceleration>
+                    <x>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>2e-4</stddev>
+                        </noise>
+                    </x>
+                    <y>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>2e-4</stddev>
+                        </noise>
+                    </y>
+                    <z>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>2e-4</stddev>
+                        </noise>
+                    </z>
+                </linear_acceleration>
+            </imu>
             <always_on>1</always_on>
             <initialOrientationAsReference>false</initialOrientationAsReference>
+            <gz_frame_id>imu_link</gz_frame_id>
             <updateRate>100</updateRate>
             <visualize>true</visualize>
             <topic>imu/data_raw</topic>

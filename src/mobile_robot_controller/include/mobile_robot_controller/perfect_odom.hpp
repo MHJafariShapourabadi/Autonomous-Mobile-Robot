@@ -1,9 +1,7 @@
-#ifndef SIMPLE_CONTROLLER_HPP
-#define SIMPLE_CONTROLLER_HPP
+#ifndef PERFECT_ODOM_HPP
+#define PERFECT_ODOM_HPP
 
 #include <rclcpp/rclcpp.hpp>
-#include <std_msgs/msg/float64_multi_array.hpp>
-#include <geometry_msgs/msg/twist_stamped.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <nav_msgs/msg/odometry.hpp>
@@ -12,29 +10,35 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <cmath>
-#include <random>
 
-using std_msgs::msg::Float64MultiArray;
-using geometry_msgs::msg::TwistStamped;
 using geometry_msgs::msg::TransformStamped;
 using sensor_msgs::msg::JointState;
 using nav_msgs::msg::Odometry;
 
-class SimpleController : public rclcpp::Node
+class PerfectOdom : public rclcpp::Node
 {
 public:
-    SimpleController();
+    PerfectOdom();
 
 private:
     double wheel_radius;
     double wheel_separation;
     Eigen::Matrix<double, 2, 2> wheel_vel_to_cmd_vel_matrix;
     Eigen::Matrix<double, 2, 2> cmd_vel_to_wheel_vel_matrix;
+    Eigen::Vector<double, 2> last_wheel_pos;
+    Eigen::Vector<double, 2> robot_pos;
+    double robot_orein;
+    Eigen::Vector<double, 2> robot_speed;
+    rclcpp::Time last_time;
+    Odometry odom_msg;
+    TransformStamped odom_base_tf;
 
-    rclcpp::Publisher<Float64MultiArray>::SharedPtr wheel_vel_pub;
-    rclcpp::Subscription<TwistStamped>::SharedPtr cmd_vel_sub;
+    rclcpp::Subscription<JointState>::SharedPtr joint_states_sub;
+    rclcpp::Publisher<Odometry>::SharedPtr odom_pub;
 
-    void cmd_vel_callback(const TwistStamped& msg);
+    std::shared_ptr<tf2_ros::TransformBroadcaster> transform_broadcaster;
+
+    void joint_states_callback(const JointState& msg);
 };
 
 #endif

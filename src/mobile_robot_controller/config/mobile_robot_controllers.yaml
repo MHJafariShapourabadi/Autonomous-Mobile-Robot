@@ -35,7 +35,7 @@ diff_drive_base_controller:
     right_wheel_names: ["base_right_wheel_joint"]
 
     # Geometry
-    wheel_separation: 0.45         # distance between left and right wheels [m]
+    wheel_separation: 0.35         # distance between left and right wheels [m]
     wheel_radius: 0.1             # radius of each wheel [m]
 
     # Kinematics parameters
@@ -53,7 +53,7 @@ diff_drive_base_controller:
 
     # Topics
     odom_frame_id: "odom"
-    base_frame_id: "base_footprint"
+    base_frame_id: "base_footprint_perfect"
     enable_odom_tf: true
     publish_limited_velocity: true
     publish_wheel_data: true

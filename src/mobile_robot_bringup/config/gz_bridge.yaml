@@ -90,21 +90,21 @@
   gz_type_name: "gz.msgs.Boolean"
   direction: ROS_TO_GZ
 
-- ros_service_name: "/battery/recharge/start"
-  gz_service_name: "/model/mobile_robot/battery/linear_battery/recharge/start"
-  ros_request_type: "std_srvs/srv/SetBool"
-  gz_request_type: "gz.msgs.Boolean"
-  ros_response_type: "std_srvs/srv/Empty"
-  gz_response_type: "gz.msgs.Empty"
-  direction: ROS_TO_GZ
+# - ros_service_name: "/battery/recharge/start"
+#   gz_service_name: "/model/mobile_robot/battery/linear_battery/recharge/start"
+#   ros_request_type: "std_srvs/srv/SetBool"
+#   gz_request_type: "gz.msgs.Boolean"
+#   ros_response_type: "std_srvs/srv/Empty"
+#   gz_response_type: "gz.msgs.Empty"
+#   direction: ROS_TO_GZ
 
-- ros_service_name: "/battery/recharge/stop"
-  gz_service_name: "/model/mobile_robot/battery/linear_battery/recharge/stop"
-  ros_request_type: "std_srvs/srv/SetBool"
-  gz_request_type: "gz.msgs.Boolean"
-  ros_response_type: "std_srvs/srv/Empty"
-  gz_response_type: "gz.msgs.Empty"
-  direction: ROS_TO_GZ
+# - ros_service_name: "/battery/recharge/stop"
+#   gz_service_name: "/model/mobile_robot/battery/linear_battery/recharge/stop"
+#   ros_request_type: "std_srvs/srv/SetBool"
+#   gz_request_type: "gz.msgs.Boolean"
+#   ros_response_type: "std_srvs/srv/Empty"
+#   gz_response_type: "gz.msgs.Empty"
+#   direction: ROS_TO_GZ
 
 - ros_topic_name: "/battery/discharge/start"
   gz_topic_name: "/battery/discharge/start"

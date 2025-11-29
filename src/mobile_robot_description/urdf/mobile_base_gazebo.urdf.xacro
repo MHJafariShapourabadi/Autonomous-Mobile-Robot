@@ -49,10 +49,10 @@
             <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin" >
                 <parameters>$(find mobile_robot_controller)/config/mobile_robot_controllers.yaml</parameters>
                 <controller_manager_node_name>controller_manager</controller_manager_node_name>
-                <ros>
+                <!-- <ros>
                     <remapping>/diff_drive_base_controller/cmd_vel:=/cmd_vel</remapping>
                     <remapping>/diff_drive_base_controller/odom:=/odom</remapping>
-                </ros>
+                </ros> -->
             </plugin>
         </gazebo>
         

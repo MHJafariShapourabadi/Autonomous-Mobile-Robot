@@ -1,7 +1,7 @@
 #include "mobile_robot_controller/simple_controller.hpp"
 
 SimpleController::SimpleController() :
-    Node("simple_controller")
+    Node("simple_controller"), wheel_radius(0.0), wheel_separation(0.0)
 {
     declare_parameter("wheel_radius", 0.1);
     declare_parameter("wheel_separation", 0.45);
@@ -28,11 +28,12 @@ SimpleController::SimpleController() :
     cmd_vel_sub = create_subscription<TwistStamped>(
         "cmd_vel",
         10,
-        [this](TwistStamped msg)-> void {cmd_vel_callback(msg);}
+        [this](const TwistStamped& msg)-> void {cmd_vel_callback(msg);}
     );
+
 }
 
-void SimpleController::cmd_vel_callback(TwistStamped msg)
+void SimpleController::cmd_vel_callback(const TwistStamped& msg)
 {
     double v = msg.twist.linear.x;
     double w = msg.twist.angular.z;

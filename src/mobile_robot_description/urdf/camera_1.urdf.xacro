@@ -28,11 +28,21 @@
         <xacro:box_inertial mass="0.1" size="${camera_length} ${camera_width} ${camera_height}" origin_xyz="0 0 0" origin_rpy="0 0 0"/>
     </link>
 
-    <gazebo>
-        <plugin name="gz::sim::systems::Sensors" filename="gz-sim-sensors-system" >
-            <render_engine>ogre2</render_engine>
-        </plugin>
-    </gazebo>
+    <xacro:if value="$(arg is_gz)">
+        <gazebo>
+            <plugin name="gz::sim::systems::Sensors" filename="gz-sim-sensors-system" >
+                <render_engine>ogre2</render_engine>
+            </plugin>
+        </gazebo>
+    </xacro:if>
+
+    <xacro:unless value="$(arg is_gz)">
+        <gazebo>
+            <plugin name="ignition::gazebo::systems::Sensors" filename="ignition-gazebo-sensors-system" >
+                <render_engine>ogre2</render_engine>
+            </plugin>
+        </gazebo>
+    </xacro:unless>
 
     <gazebo reference="camera_link">
         <sensor name="camera" type="camera">

@@ -48,6 +48,7 @@
                     <mean>0.0</mean>
                     <stddev>0.007</stddev>
                 </noise>
+                <optical_fram_id>depth_camera_link</optical_fram_id>
             </depth_camera>
             <frame_id>depth_camera_link</frame_id>
             <always_on>1</always_on>

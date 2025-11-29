@@ -2,23 +2,33 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <gazebo reference="rear_left_caster_wheel">
-        <mu1 value="0.1"/>
-        <mu2 value="0.1"/>
+        <mu1 value="0.0001"/>
+        <mu2 value="0.0001"/>
     </gazebo>
 
     <gazebo reference="rear_right_caster_wheel">
-        <mu1 value="0.1"/>
-        <mu2 value="0.1"/>
+        <mu1 value="0.0001"/>
+        <mu2 value="0.0001"/>
     </gazebo>
 
     <gazebo reference="front_left_caster_wheel">
-        <mu1 value="0.1"/>
-        <mu2 value="0.1"/>
+        <mu1 value="0.0001"/>
+        <mu2 value="0.0001"/>
     </gazebo>
 
     <gazebo reference="front_right_caster_wheel">
-        <mu1 value="0.1"/>
-        <mu2 value="0.1"/>
+        <mu1 value="0.0001"/>
+        <mu2 value="0.0001"/>
+    </gazebo>
+
+    <gazebo reference="left_wheel_link">
+        <mu1 value="1000000"/>
+        <mu2 value="1000000"/>
+    </gazebo>
+
+    <gazebo reference="right_wheel_link">
+        <mu1 value="1000000"/>
+        <mu2 value="1000000"/>
     </gazebo>
     
     <xacro:if value="$(arg is_gz)" >
@@ -49,10 +59,10 @@
             <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin" >
                 <parameters>$(find mobile_robot_controller)/config/mobile_robot_controllers.yaml</parameters>
                 <controller_manager_node_name>controller_manager</controller_manager_node_name>
-                <ros>
+                <!-- <ros>
                     <remapping>/diff_drive_base_controller/cmd_vel:=/cmd_vel</remapping>
                     <remapping>/diff_drive_base_controller/odom:=/odom</remapping>
-                </ros>
+                </ros> -->
             </plugin>
         </gazebo>
         
@@ -105,10 +115,10 @@
             <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin" >
                 <parameters>$(find mobile_robot_controller)/config/mobile_robot_controllers.yaml</parameters>
                 <controller_manager_node_name>controller_manager</controller_manager_node_name>
-                <ros>
+                <!-- <ros>
                     <remapping>/diff_drive_base_controller/cmd_vel:=/cmd_vel</remapping>
                     <remapping>/diff_drive_base_controller/odom:=/odom</remapping>
-                </ros>
+                </ros> -->
             </plugin>
         </gazebo>
     </xacro:unless>

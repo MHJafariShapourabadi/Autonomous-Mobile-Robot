@@ -116,7 +116,7 @@ def generate_launch_description():
         name="pointcloud_frame_id_converter_depth_camera",
         parameters=[{
             "use_sim_time": True,
-            "frame_id": "zed_camera_link",
+            "frame_id": "camera_link",
             "subscription_topic": "/depth_camera/points",
             "publisher_topic": "/depth_camera/points/corrected",
         }]

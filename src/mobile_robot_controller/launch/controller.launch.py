@@ -1,11 +1,13 @@
-from launch import LaunchDescription
+from launch import LaunchDescription, LaunchContext
 from launch_ros.actions import Node
-from launch.actions import TimerAction, DeclareLaunchArgument, GroupAction
+from launch.actions import TimerAction, DeclareLaunchArgument, GroupAction, OpaqueFunction
 from launch_ros.substitutions import FindPackageShare
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 from launch.conditions import IfCondition, UnlessCondition
 
 def generate_launch_description():
+
+    # context = LaunchContext()
 
     # urdf_path = DeclareLaunchArgument(
     #     name="urdf_path",
@@ -32,7 +34,7 @@ def generate_launch_description():
 
     use_simple_controller_arg = DeclareLaunchArgument(
         name="use_simple_controller",
-        default_value="True"
+        default_value="False"
     )
 
     use_simple_controller = LaunchConfiguration("use_simple_controller")
@@ -55,6 +57,8 @@ def generate_launch_description():
             "diff_drive_base_controller",
             "--controller-manager", "/controller_manager",
             "--switch-timeout", "30.0",
+            "--controller-ros-args", "-r /diff_drive_base_controller/cmd_vel:=/cmd_vel", 
+            "--controller-ros-args", "-r /diff_drive_base_controller/odom:=/odom_perfect",
         ],
         condition=UnlessCondition(use_simple_controller),
     )
@@ -69,14 +73,26 @@ def generate_launch_description():
         default_value="0.1",
     )
 
+    wheel_radius_error_arg = DeclareLaunchArgument(
+        name="wheel_radius_error",
+        default_value="0.005",
+    )
+
     wheel_separation_arg = DeclareLaunchArgument(
         name="wheel_separation",
-        default_value="0.45",
+        default_value="0.35",
+    )
+
+    wheel_separation_error_arg = DeclareLaunchArgument(
+        name="wheel_separation_error",
+        default_value="0.02",
     )
 
     use_python = LaunchConfiguration("use_python")
     wheel_radius = LaunchConfiguration("wheel_radius")
+    wheel_radius_error = LaunchConfiguration("wheel_radius_error")
     wheel_separation = LaunchConfiguration("wheel_separation")
+    wheel_separation_error = LaunchConfiguration("wheel_separation_error")
 
     simple_velocity_controller_spawner = Node(
         package="controller_manager",
@@ -94,6 +110,7 @@ def generate_launch_description():
         parameters=[{
             "wheel_radius": wheel_radius,
             "wheel_separation": wheel_separation,
+            'use_sim_time': True,
         }],
         condition=IfCondition(use_python),
     )
@@ -103,7 +120,56 @@ def generate_launch_description():
         executable="simple_controller",
         parameters=[{
             "wheel_radius": wheel_radius,
+            "wheel_radius_error": wheel_radius_error,
+            'use_sim_time': True,
+        }],
+        condition=UnlessCondition(use_python),
+    )
+
+    perfect_odom_py = Node(
+        package="mobile_robot_controller",
+        executable="perfect_odom.py",
+        parameters=[{
+            "wheel_radius": wheel_radius,
             "wheel_separation": wheel_separation,
+            'use_sim_time': True,
+        }],
+        condition=IfCondition(use_python),
+    )
+
+    noisy_odom_py = Node(
+        package="mobile_robot_controller",
+        executable="noisy_odom.py",
+        parameters=[{
+            "wheel_radius": wheel_radius,
+            "wheel_separation": wheel_separation,
+            "wheel_radius_error": wheel_radius_error,
+            "wheel_separation_error": wheel_separation_error,
+            'use_sim_time': True,
+        }],
+        condition=IfCondition(use_python),
+    )
+
+    perfect_odom_cpp = Node(
+        package="mobile_robot_controller",
+        executable="perfect_odom",
+        parameters=[{
+            "wheel_radius": wheel_radius,
+            "wheel_separation": wheel_separation,
+            'use_sim_time': True,
+        }],
+        condition=UnlessCondition(use_python),
+    )
+
+    noisy_odom_cpp = Node(
+        package="mobile_robot_controller",
+        executable="noisy_odom",
+        parameters=[{
+            "wheel_radius": wheel_radius,
+            "wheel_separation": wheel_separation,
+            "wheel_radius_error": wheel_radius_error,
+            "wheel_separation_error": wheel_separation_error,
+            'use_sim_time': True,
         }],
         condition=UnlessCondition(use_python),
     )
@@ -112,7 +178,9 @@ def generate_launch_description():
         actions=[
             simple_velocity_controller_spawner,
             cmd_vel_to_wheel_vel_py,
-            cmd_vel_to_wheel_vel_cpp
+            cmd_vel_to_wheel_vel_cpp,
+            perfect_odom_py,
+            perfect_odom_cpp,
         ],
         condition=IfCondition(use_simple_controller)
     )
@@ -123,12 +191,16 @@ def generate_launch_description():
         joint_state_broadcaster_spawner,
         simple_velocity_controller,
         diff_drive_base_controller_spawner,
+        noisy_odom_py,
+        noisy_odom_cpp,
     ])
 
     return LaunchDescription([
         use_simple_controller_arg,
         use_python_arg,
         wheel_radius_arg,
+        wheel_radius_error_arg,
         wheel_separation_arg,
+        wheel_separation_error_arg,
         controller_spawning,
     ])

@@ -12,10 +12,24 @@ find_package(rclpy REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 find_package(Eigen3 REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+
+ament_python_install_package(${PROJECT_NAME})
+
+install(PROGRAMS
+  ${PROJECT_NAME}/quaternion/quaternion.py
+  ${PROJECT_NAME}/simple_controller.py
+  ${PROJECT_NAME}/perfect_odom.py
+  ${PROJECT_NAME}/noisy_odom.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 include_directories(include)
 include_directories(${EIGEN3_INCLUDE_DIR})
@@ -26,17 +40,18 @@ install(
 )
 
 add_executable(simple_controller src/simple_controller.cpp)
-ament_target_dependencies(simple_controller rclcpp std_msgs geometry_msgs ${Eigen_LIBRARIES})
+ament_target_dependencies(simple_controller rclcpp std_msgs geometry_msgs sensor_msgs nav_msgs tf2 tf2_ros ${Eigen_LIBRARIES})
+
+add_executable(perfect_odom src/perfect_odom.cpp)
+ament_target_dependencies(perfect_odom rclcpp geometry_msgs sensor_msgs nav_msgs tf2 tf2_ros ${Eigen_LIBRARIES})
+
+add_executable(noisy_odom src/noisy_odom.cpp)
+ament_target_dependencies(noisy_odom rclcpp geometry_msgs sensor_msgs nav_msgs tf2 tf2_ros ${Eigen_LIBRARIES})
 
 install(TARGETS
   simple_controller
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-ament_python_install_package(${PROJECT_NAME})
-
-install(PROGRAMS
-  mobile_robot_controller/simple_controller.py
+  perfect_odom
+  noisy_odom
   DESTINATION lib/${PROJECT_NAME}
 )
 
