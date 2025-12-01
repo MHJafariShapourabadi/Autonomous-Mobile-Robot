@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(mobile_robot_bringup)
+project(mobile_robot_localization)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -7,29 +7,32 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
+find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
-include_directories(include)
+ament_python_install_package(${PROJECT_NAME})
 
-add_executable(pointcloud_frame_id_converter src/pointcloud_frame_id_converter.cpp)
-ament_target_dependencies(pointcloud_frame_id_converter rclcpp sensor_msgs)
-
-add_executable(imu_frame_id_converter src/imu_frame_id_converter.cpp)
-ament_target_dependencies(imu_frame_id_converter rclcpp sensor_msgs)
-
-install(TARGETS
-  pointcloud_frame_id_converter
-  imu_frame_id_converter
+install(PROGRAMS
+  ${PROJECT_NAME}/kalman_filter.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
-install(
-  DIRECTORY launch config
-  DESTINATION share/${PROJECT_NAME}/
+include_directories(include)
+
+add_executable(kalman_filter src/kalman_filter.cpp)
+ament_target_dependencies(kalman_filter rclcpp nav_msgs sensor_msgs)
+
+install(TARGETS
+  kalman_filter
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY
+  launch config
+  DESTINATION share/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)
