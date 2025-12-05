@@ -122,17 +122,7 @@ def generate_launch_description():
         }]
     )
 
-    imu_frame_id_converter = Node(
-        package="mobile_robot_bringup",
-        executable="imu_frame_id_converter",
-        name="imu_frame_id_converter",
-        parameters=[{
-            "use_sim_time": True,
-            "frame_id": "base_footprint_ekf",
-            "subscription_topic": "imu/data_raw",
-            "publisher_topic": "imu_ekf",
-        }]
-    )
+    
 
     mobile_robot_controller = TimerAction(
         period=15.0,  # Wait 15 seconds for Gazebo + robot to initialize
@@ -204,7 +194,6 @@ def generate_launch_description():
         ros_gz_bridge,
         lidar_frame_id_converter,
         depth_camera_frame_id_converter,
-        imu_frame_id_converter,
         mobile_robot_controller,
         mobile_robot_localization,
         # start_object_detector,
